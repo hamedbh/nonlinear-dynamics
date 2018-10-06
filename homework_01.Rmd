@@ -90,3 +90,21 @@ tibble(i = seq(0, 5e5)) %>%
     mean()
 ```
 
+# Question 2
+
+## a
+
+```{r}
+plot_logistic_map(0.2, 3.68725, 50)
+```
+
+Appears to be chaotic.
+
+## b
+
+In the animation it appears to have a 9-cycle.
+
+## c 
+
+Takeaway is that is can be hard to discern the pattern from just one plot.
+
