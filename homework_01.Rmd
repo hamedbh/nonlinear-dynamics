@@ -1,0 +1,92 @@
+---
+title: "Homework 1: Parameters and Bifurcations"
+output: html_notebook
+---
+
+```{r}
+# source the logistic map functions
+source("./R/logistic_map.R")
+# load libraries
+library(dplyr)
+library(ggplot2)
+library(purrr)
+```
+
+# Question 1
+
+## a, b, c
+
+```{r}
+# set up the starting conditions for each test
+x_0 <- c(0.2, rep(0, 200))
+x_tilde <- c(0.200001, rep(0, 200))
+
+# create results for each value of r, starting with r = 2
+res1 <- tibble(i = seq(0, 200)) %>% 
+    mutate(x = log_map_cpp(x_0, 2)) %>% 
+    mutate(x_tilde = log_map_cpp(x_tilde, 2)) %>% 
+    mutate(diff = abs(x - x_tilde))
+
+res2 <- tibble(i = seq(0, 200)) %>% 
+    mutate(x = log_map_cpp(x_0, 3.4)) %>% 
+    mutate(x_tilde = log_map_cpp(x_tilde, 3.4)) %>% 
+    mutate(diff = abs(x - x_tilde))
+
+res3 <- tibble(i = seq(0, 200)) %>% 
+    mutate(x = log_map_cpp(x_0, 3.72)) %>% 
+    mutate(x_tilde = log_map_cpp(x_tilde, 3.72)) %>% 
+    mutate(diff = abs(x - x_tilde))
+
+# create function to plot results
+plot_diff <- function(result_df) {
+    print(
+        ggplot(result_df, aes(x = i, y = diff)) + 
+            geom_point() + 
+            theme_minimal())
+}
+walk(list(res1, res2, res3), plot_diff)
+```
+
+## d
+
+The plots for $r = 2$ and $r = 3.4$ show their largest differences at the start, quickly converging to identical values. Plot for $r = 3.72$ shows no pattern or convergence.
+
+## e
+
+```{r}
+round(
+    (log_map_cpp(c(x_0, rep(0, 300)), 2) - 
+         log_map_cpp(c(x_tilde, rep(0, 300)), 2))[[501]], 
+    6)
+```
+
+## f
+
+```{r}
+round(
+    (log_map_cpp(c(x_0, rep(0, 300)), 3.4) - 
+         log_map_cpp(c(x_tilde, rep(0, 300)), 3.4))[[501]], 
+    6)
+```
+
+## g
+```{r}
+tibble(i = seq(0, 5000)) %>% 
+    mutate(x = log_map_cpp(c(0.2, rep(0, 5000)), 3.72)) %>% 
+    mutate(x_tilde = log_map_cpp(c(0.200001, rep(0, 5000)), 3.72)) %>% 
+    mutate(diff = abs(x - x_tilde)) %>% 
+    pull(diff) %>% 
+    mean()
+```
+
+## h
+
+```{r}
+tibble(i = seq(0, 5e5)) %>% 
+    mutate(x = log_map_cpp(c(0.2, rep(0, 5e5)), 3.72)) %>% 
+    mutate(x_tilde = log_map_cpp(c(0.200001, rep(0, 5e5)), 3.72)) %>% 
+    mutate(diff = abs(x - x_tilde)) %>% 
+    pull(diff) %>% 
+    mean()
+```
+
