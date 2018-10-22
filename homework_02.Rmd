@@ -1,0 +1,60 @@
+---
+title: "Homework 2: Bifurcation Diagram"
+output: html_notebook
+---
+
+# Part 1
+
+## Q1
+
+```{r}
+source("./R/logistic_map.R")
+
+# load libraries
+library(dplyr)
+library(ggplot2)
+library(purrr)
+```
+
+```{r}
+bifurcation_plot <- function(
+    x_0, 
+    r_min, 
+    r_max, # upper and lower bounds for r, 
+    r_step, # size of increment from r_min to max
+    n, # total number of iterates to perform
+    k # number of iterates to drop at the start i.e. the transient
+    ) {
+    all_r <- seq(from = r_min, to = r_max, by = r_step)
+    g <- map(all_r, function(r) {
+        logistic_map(x = x_0, 
+                     r = r, 
+                     N = n)
+    }) %>% 
+        bind_rows() %>% 
+        mutate(r = rep(all_r, each = n + 1)) %>% 
+        filter(i > k) %>% 
+        ggplot(aes(r, x)) + 
+        geom_point(size = 0.05, alpha = 0.05) + 
+        ggtitle("Bifurcation Plot") + 
+        theme_minimal()
+    print(g)
+}
+```
+
+```{r}
+bifurcation_plot(0.2, 2.4, 4, 0.01, 1000, 5)
+```
+
+```{r}
+bifurcation_plot(0.2, 2.4, 4, 0.01, 1000, 500)
+```
+
+```{r}
+bifurcation_plot(0.2, 2.8, 3.6, 0.01, 1000, 500)
+```
+
+```{r}
+bifurcation_plot(0.2, 2.8, 3.6, 0.0001, 1000, 500)
+```
+
